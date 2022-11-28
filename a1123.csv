@@ -1,0 +1,1965 @@
+,answerid,parentid,username,userid,context,time,vote
+0,,74584960,,,,,
+1,74585022,74584959,MaDa,838434,"Either (1) create a Spy instead of the AirportService and mock the getFileName() method:
+service = Mockito.spy(new AirportService());
+and then mock the desired method:
+Mockito.doReturn((/* your value */)).when(service).getFileName();
+or (2) create yet another class, this time extending the AirportService; there you can implement the getFileName so it returns your mock file name.",2022-11-26 19:37:23Z,0
+2,page note found,74584957,page note found,page note found,page note found,page note found,page note found
+3,closed,74584955,closed,closed,closed,closed,closed
+4,,74584954,,,,,
+5,74585428,74584953,Clegane,15415267,"Have you tried using explode before using crosstab ?
+#import ast
+#df['ColName2007.1099']=df['ColName2007.1099'].apply(ast.literal_eval)
+
+df = df.explode('ColName2007.1099')
+df = pd.crosstab(df['ColName2007.1099'],columns=df['Category'],margins=True)
+print(df)
+'''
+Category          Class A  Class B  Class D  All
+ColName2007.1099                                
+org1                    2        3        1    6
+org2                    3        2        2    7
+org3                    2        1        0    3
+org4                    1        0        1    2
+All                     8        6        4   18
+'''
+Note, the data you gave as an example does not match your expected output (For example, there is no Class C in the data you provided. ). But it works correctly in the data you provided. If this is not what you want, please provide data that can be copied and pasted and compatible with the expected output.",2022-11-26 21:00:35Z,0
+6,74585282,74584952,dcsuka,19512611,"Using cumsum with the lag condition produces your expected output:
+df |>
+  mutate(grp = cumsum(abs(bp - lag(bp, default = first(bp))) > 1e7)) |>
+  group_by(chr, grp)  |>
+  summarise(bp = mean(bp),
+            across(starts_with(""instance""), sum),
+            .groups = ""drop"")
+
+# A tibble: 4 × 6
+    chr   grp         bp instances_1 instances_2 instances_sum
+  <int> <int>      <dbl>       <int>       <int>         <int>
+1     1     0 144001090.           1           1             2
+2     1     1 187773270            2           2             4
+3     2     2 121819306.           3           1             4
+4     2     3 259965687            1           1             2",2022-11-26 20:08:56Z,2
+7,74585153,74584950,GoldenGateBridge,14404231,"The p value is stored in the p.value parameter of the T test. And to update rejects, you just do rejects = rejects + 1.
+set.seed(5)
+simulation <- function(n, mu, sigma, mu0, alpha) {
+ rejects <- 0; S <- 100
+ for(i in 1:S) {
+ sample <- rnorm(n, mean=mu, sd=sigma)
+ T=t.test(sample,mu=mu0)
+ if (T$p.value < alpha) rejects = rejects+1
+ }
+ return(rejects)
+ }",2022-11-26 19:49:48Z,1
+8,48846044,48845989,heemayl,3789550,"As you have not defined a __repr__ (or __str__) on the class, it's inherited the one from the superclass -- object and that how its written there. So, all your class instances are expressed that way. As for the class itself, you need to change the __repr__/__str__ on the metaclass i.e. the class of which our class in question is an instance of; the default metaclass is type. __main__ is the name of the module, here as you are directly executing it, its being considered as a script and all scripts have the name __main__ in Python
+There's a . in between because Fraction is an attribute of the script __main__, the module; and belongs to the module level scope
+Example:
+In [47]: class MyMeta(type):
+    ...:     def __repr__(cls):
+    ...:         return 'Whatever...'
+    ...:     
+
+In [48]: class MyClass(metaclass=MyMeta):
+    ...:     def __repr__(self):
+    ...:         return 'Howdy...'
+    ...:     
+
+In [49]: obj = MyClass()
+
+In [50]: print(obj)
+Howdy...
+
+In [51]: print(type(obj))
+Whatever...
+For Python2, you need to define __metaclass__ as a class attribute.",2018-02-17 21:42:04Z,12
+9,48845999,48845989,Ignacio Vazquez-Abrams,20862,"The name of the script being run is always __main__. This is why you check for this specific name, and why classes defined in the script are attributes of it.",2018-02-17 21:15:08Z,7
+10,74585040,74584948,Krelq,15000290,"You should add a ""WHERE"" param to your query. Now you are trying to select each exam from the database instead of selecting the ones assigned to the user
+Example
+SELECT id, title, no_questions, points, schedule, time_limit, link FROM exams WHERE user_id = 1
+Change ""user_id"" parameter to one from your database or create it in order to assign exam to student. And you should dynamic replace ""1"" with ID from user session.
+https://www.w3schools.com/mysql/mysql_where.asp",2022-11-26 19:29:32Z,0
+11,,74584946,,,,,
+12,closed,74584945,closed,closed,closed,closed,closed
+13,74584975,74584944,Blitva,4852315,"Edit: Figured it out. The mistake was that I was doing cleanup like so return () => newSocket.close(); and consequently returning a Socket<DefaultEventsMap, DefaultEventsMap> type.
+Solution was to make the newsocket.close() call inside of curly braces so that the return value remains void, like so:
+return () => {
+  newSocket.close();
+};
+Would appreciate any further elaboration if my interpretation is faulty here.",2022-11-26 19:20:58Z,0
+14,,74584942,,,,,
+15,,74584940,,,,,
+16,,74584939,,,,,
+17,page note found,74584938,page note found,page note found,page note found,page note found,page note found
+18,page note found,74584937,page note found,page note found,page note found,page note found,page note found
+19,74585423,74584935,Dead Fox,20609023,"The recursive call inside the last 2 if statements should have:
+R.getLeftChild() and R.getRightChild()
+instead of:
+root.getLeftChild() and root.getRightChild()",2022-11-26 20:33:38Z,0
+20,,74584931,,,,,
+21,74584958,74584930,chqrlie,4593267,"The c array is defined as a local variable in both the display and the data_entry_of_customers functions. The values entered are lost when the function returns and the contents of c in the display function are indeterminate producing undefined behavior (garbage output).
+The program may seem to behave as expected if, by chance, the position and contents of the c array in both functions happens to be the same.
+You should more the definition of the array to the main function and pass it to data_entry_of_customers() and display().
+Here is a modified version:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Customer {
+    char name[20];
+    int date;
+    int month;
+    int year;
+    int amount;
+    int type_of_account;
+} cus;
+
+void display(int n, cus c[n]);
+void data_entry_of_customers(int n, cus c[n]);
+
+int main() {
+    int n, choices;
+
+    printf(""\n Enter the number of customers : "");
+    if (scanf(""%d"", &n) != 1)
+        return 1;
+    cus cus_array[n];
+
+    for (;;) {
+        printf(""\n Enter your choice :"");
+        if (scanf(""%d"", &choices) != 1)
+            break;
+
+        switch (choices) {
+        case 1:
+            data_entry_of_customers(n, cus_array);
+            break;
+
+        case 2:
+            display(n, cus_array);
+            break;
+
+        case 3:
+            return 0;
+
+        default:
+            printf(""\n Invalid Choice\n"");
+            break;
+        }
+    }
+    return 0;
+}
+
+void data_entry_of_customers(int n, cus c[n]) {
+    for (int i = 0; i < n; i++) {
+        printf(""\n Enter the name of the customer%d : "", i + 1);
+        scanf(""%19s"", c[i].name);
+        printf(""\n Enter the date when the account was opened by customer : "");
+        scanf(""%d"", &c[i].date);
+        printf(""\n Enter the month when the account was opened by customer : "");
+        scanf(""%d"", &c[i].month);
+        printf(""\n Enter the year when the account was opened by customer : "");
+        scanf(""%d"", &c[i].year);
+        printf(""\n Enter the amount deposited by the customer : "");
+        scanf(""%d"", &c[i].amount);
+    }
+}
+
+void display(int n, cus c[n]) {
+    for (int i = 0; i < n; i++) {
+        printf(""\n The name of the customer%d is %s"", i + 1, c[i].name);
+        printf(""\n The date-month-year when the account was opened by customer%d is %d-%d-%d"", i + 1, c[i].date, c[i].month, c[i].year);
+        printf(""\n The amount when the account was opened by customer%d is %d"", i + 1, c[i].amount);
+        printf(""\n"");
+    }
+}
+Note these remarks:
+void display(int n, cus c[n]); defines a function that receives an int and a pointer to an array of cus structures. The prototype is equivalent to: void display(int n, cus c[]); and void display(int n, cus *c);... A possible improvement is to specify that the cus structures are not modified by the display function, thus change the prototype to void display(int n, const cus *c);
+the return value of scanf should be tested to detect and handle invalid input. Writing separate functions to read a string and an integer would help make the code more reliable and readable.
+Here is an alternate approach:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Customer {
+    char name[20];
+    int date;
+    int month;
+    int year;
+    int amount;
+    int type_of_account;
+} cus;
+
+char *enter_string(const char *prompt, char *dest, size_t size);
+int enter_int(const char *prompt, int min, int max);
+
+void display(int n, const cus *c);
+void data_entry_of_customers(int n, cus *c);
+
+int main() {
+    int n = enter_int(""Enter the number of customers"", 1, 1000);
+    cus cus_array[n];
+
+    for (;;) {
+        switch (enter_int(""Enter your choice"", 1, 3)) {
+        case 1:
+            data_entry_of_customers(n, cus_array);
+            break;
+
+        case 2:
+            display(n, cus_array);
+            break;
+
+        case 3:
+            return 0;
+        }
+    }
+}
+
+char *enter_string(const char *prompt, char *dest, size_t size) {
+    int c;
+    size_t i = 0;
+
+    printf(""%s: "", prompt);
+    fflush(stdout);
+    while ((c = getchar()) != EOF && c != '\n') {
+        if (i + 1 < size) {
+            dest[i++] = (char)c;
+        }
+    }
+    printf(""\n"");
+    if (i == 0 && c == EOF) {
+        printf(""unexpected end of file\n"");
+        exit(1);
+    }
+    if (i < size)
+        dest[i] = '\0';
+    return dest;
+}
+
+int enter_int(const char *prompt, int min, int max) {
+    int c, res, value;
+
+    for (;;) {
+        printf(""%s: "", prompt);
+        fflush(stdout);
+        res = scanf(""%d"", &value);
+        while ((c = getchar()) != EOF && c != '\n')
+            continue;
+        printf(""\n"");
+        if (res == 1) {
+            if (value >= min && value <= max)
+                return value;
+            printf(""invalid value, must be between %d and %d\n"", min, max);
+        } else {
+            if (c == EOF) {
+                printf(""unexpected end of file\n"");
+                exit(1);
+            }
+            printf(""invalid input, enter a number between %d and %d\n"", min, max);
+        }
+    }
+}
+
+void data_entry_of_customers(int n, cus *c) {
+    char prompt[80];
+    for (int i = 0; i < n; i++) {
+        snprintf(prompt, sizeof prompt, ""Enter the name of the customer%d"", i + 1);
+        enter_string(prompt, c[i].name, sizeof(c[i].name));
+        c[i].date = enter_int(""Enter the date when the account was opened by customer"",
+                              1, 31);
+        c[i].month = enter_int(""Enter the month when the account was opened by customer"",
+                               1, 12);
+        c[i].year = enter_int(""Enter the year when the account was opened by customer"",
+                              1900, 2100);
+        c[i].amount = enter_int(""Enter the amount disposited by the customer"",
+                                0, 1000000000);
+    }
+}
+
+void display(int n, const cus *c) {
+    for (int i = 0; i < n; i++) {
+        printf(""The name of the customer%d is %s\n"", i + 1, c[i].name);
+        printf(""The date-month-year when the account was opened by customer%d is %d-%d-%d\n"",
+               i + 1, c[i].date, c[i].month, c[i].year);
+        printf(""The amount when the account was opened by customer%d is %d\n"",
+               i + 1, c[i].amount);
+        printf(""\n"");
+    }
+}",2022-11-27 15:01:01Z,4
+22,,74584928,,,,,
+23,74585112,74584926,Chris Hamilton,12914833,"You can get whether the checkbox is checked through e.target.checked rather than using a state variable. You also don't need to attach a value, you can just pass it directly, not that it matters.
+Since you're filtering on multiple elements, this pattern isn't going to work either. You'll need to save all of your filters so you can remove one but keep the others when the box is unchecked. I like to use a Set for this purpose. You can then just filter the products on that set.
+You also don't need to use state variables for constants that don't change.
+Also, your ids and htmlFors need to be unique, or clicking on a label will always select the first box. It's simpler just to wrap the input with the label so you don't need to worry about it.
+Stackblitz: https://stackblitz.com/edit/react-ts-9a9n67?file=App.tsx
+const categories = [
+  'electronics',
+  'jewelery',
+  ""men's clothing"",
+  ""women's clothing"",
+];
+
+const allProducts = [
+  {
+    id: 1,
+    title: 'Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops',
+    price: 109.95,
+    category: 'electronics',
+    rating: { rate: 3.9, count: 120 },
+  },
+  {
+    id: 2,
+    title: 'Mens Casual Premium Slim Fit T-Shirts ',
+    price: 22.3,
+    category: ""men's clothing"",
+    rating: { rate: 4.1, count: 259 },
+  },
+  {
+    id: 3,
+    title: 'Mens Cotton Jacket',
+    price: 55.99,
+    category: ""men's clothing"",
+    rating: { rate: 4.7, count: 500 },
+  },
+  {
+    id: 4,
+    title: 'Womens Dress',
+    price: 15.99,
+    category: ""women's clothing"",
+    rating: { rate: 2.1, count: 430 },
+  },
+  {
+    id: 5,
+    title:
+      ""John Hardy Women's Legends Naga Gold & Silver Dragon Station Chain Bracelet"",
+    price: 695,
+    category: 'jewelery',
+    rating: { rate: 4.6, count: 400 },
+  },
+];
+
+export default function App() {
+  let [categoryFilters, setcategoryFilters] = useState(new Set());
+
+  function updateFilters(checked, categoryFilter) {
+    if (checked)
+      setcategoryFilters((prev) => new Set(prev).add(categoryFilter));
+    if (!checked)
+      setcategoryFilters((prev) => {
+        const next = new Set(prev);
+        next.delete(categoryFilter);
+        return next;
+      });
+  }
+
+  const filteredProducts =
+    categoryFilters.size === 0
+      ? allProducts
+      : allProducts.filter((p) => categoryFilters.has(p.category));
+
+  return (
+    <div>
+      <div className=""d-flex justify-content-evenly"">
+        {categories.map((elm, index) => {
+          return (
+            <div className=""form-check ms-2"" key={index}>
+              <label className=""form-check-label"">
+                <input
+                  className=""form-check-input""
+                  type=""checkbox""
+                  onChange={(e) => updateFilters(e.target.checked, elm)}
+                />
+                {elm}
+              </label>
+            </div>
+          );
+        })}
+      </div>
+      <div className=""d-flex flex-wrap"">
+        {filteredProducts.map((prod) => {
+          return (
+            <div className=""card m-3"" style={{ width: '400px' }} key={prod.id}>
+              <div className=""card-body"">
+                <p className=""card-text"">Id: {prod.id}</p>
+                <h3 className=""card-title"">Title: {prod.title}</h3>
+                <p className=""card-text"">Price: {prod.price}</p>
+                <p className=""card-text"">Category: {prod.category}</p>
+                <p className=""card-text"">Rating: {prod.rating.rate}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}",2022-11-26 20:33:42Z,1
+24,74585141,74584926,codinn.dev,15755662,"Simple Solution (with updated data model for category array)
+const [category, setCategory] = useState([{value : ""electronics"", isChecked: false},{value : ""jewelery"", isChecked: false},{value : ""men's clothing"", isChecked: false},{value : ""women's clothing"", isChecked: false}]);
+  const [products, setProducts] = useState([
+    {""id"":1,""title"":""Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops"",""price"":109.95,""category"":""electronics"", ""rating"":{""rate"":3.9,""count"":120}},
+    {""id"":2,""title"":""Mens Casual Premium Slim Fit T-Shirts "",""price"":22.3, ""category"":""men's clothing"",""rating"":{""rate"":4.1,""count"":259}},
+    {""id"":3,""title"":""Mens Cotton Jacket"",""price"":55.99, ""category"":""men's clothing"",""rating"":{""rate"":4.7,""count"":500}},
+    {""id"":4,""title"":""Womens Dress"",""price"":15.99, ""category"":""women's clothing"" ,""rating"":{""rate"":2.1,""count"":430}},
+    {""id"":5,""title"":""John Hardy Women's Legends Naga Gold & Silver Dragon Station Chain Bracelet"",""price"":695, ""category"":""jewelery"",""rating"":{""rate"":4.6,""count"":400}}
+  ])
+
+  let [newProducts, setNewProducts] = useState([]);
+
+  const filterProducts = (e) => {
+    const categories = [...category];
+    const cat = categories.filter((cat)=>cat.value ===  e.target.value);
+    cat[0].isChecked = e.target.checked;
+    setCategory([...categories]);
+
+    const tempProduct = [];
+    for(let c of categories){
+      if(c.isChecked){
+        tempProduct.push(...products.filter((a) => a.category === c.value));
+      }
+    }
+
+    setNewProducts([...tempProduct]);
+  }
+
+  return <div>
+    <div className='d-flex justify-content-evenly'>
+        {
+            category.map((elm, index) => {
+                return <div className=""form-check ms-2"" key={index}>
+                    <input className=""form-check-input"" type=""checkbox"" value={elm.value} id=""flexCheckDefault"" onChange={filterProducts}/>
+                    <label className=""form-check-label"" htmlFor=""flexCheckDefault"">
+                        {elm.value}
+                    </label>
+                </div>
+            })
+        }
+    </div>
+    <div className='d-flex flex-wrap'>
+    {
+       (newProducts.length === 0 ? products : newProducts).map((prod) => {
+        return  <div className='card m-3' style={{ width: ""400px"" }} key={prod.id}>
+        <div className='card-body'>
+            <p className='card-text'>Id: {prod.id}</p>
+            <h3 className='card-title'>Title: {prod.title}</h3>
+            <p className='card-text'>Price: {prod.price}</p>
+            <p className='card-text'>Category: {prod.category}</p>
+            <p className='card-text'>Rating: {prod.rating.rate}</p>
+        </div>
+    </div>
+
+      })
+    }
+    </div>
+   </div>",2022-11-26 19:48:10Z,1
+25,74585222,74584926,John Li,20436957,"Here is a minimal solution works without useEffect or changing category and products.
+A few issues that can be addressed in posted code:
+Each input need to have an unique id which matches htmlFor on label for the pair to work together.
+When filterProducts sets a new state value, it does not get the updated value in the same block. Only use this event to set the filters in toCheck.
+The value type of toCheck can be an object of [category]: Boolean so each category can be filtered separately, and filters can be combined as well.
+The original products can be filtered before mapped, so there is no need to keep another state of newProducts, or to modify products data.
+Example (live demo: stackblitz)
+import React, { useState } from 'react';
+import './style.css';
+
+export default function App() {
+  const [category, setCategory] = useState([
+    'electronics',
+    'jewelery',
+    ""men's clothing"",
+    ""women's clothing"",
+  ]);
+  const [products, setProducts] = useState([
+    {
+      id: 1,
+      title: 'Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops',
+      price: 109.95,
+      category: 'electronics',
+      rating: { rate: 3.9, count: 120 },
+    },
+    {
+      id: 2,
+      title: 'Mens Casual Premium Slim Fit T-Shirts ',
+      price: 22.3,
+      category: ""men's clothing"",
+      rating: { rate: 4.1, count: 259 },
+    },
+    {
+      id: 3,
+      title: 'Mens Cotton Jacket',
+      price: 55.99,
+      category: ""men's clothing"",
+      rating: { rate: 4.7, count: 500 },
+    },
+    {
+      id: 4,
+      title: 'Womens Dress',
+      price: 15.99,
+      category: ""women's clothing"",
+      rating: { rate: 2.1, count: 430 },
+    },
+    {
+      id: 5,
+      title:
+        ""John Hardy Women's Legends Naga Gold & Silver Dragon Station Chain Bracelet"",
+      price: 695,
+      category: 'jewelery',
+      rating: { rate: 4.6, count: 400 },
+    },
+  ]);
+
+  const [toCheck, setToCheck] = useState({});
+
+  const filterProducts = (value) =>
+    setToCheck((prev) => {
+      return { ...prev, [value]: !!!prev[value] };
+    });
+
+  return (
+    <div>
+      <div className=""d-flex justify-content-evenly"">
+        {category.map((elm, index) => {
+          return (
+            <div className=""form-check ms-2"" key={index}>
+              <input
+                className=""form-check-input""
+                type=""checkbox""
+                value={elm}
+                id={`flexCheckDefault-${index}`}
+                onChange={(e) => filterProducts(e.target.value)}
+              />
+              <label
+                className=""form-check-label""
+                htmlFor={`flexCheckDefault-${index}`}
+              >
+                {elm}
+              </label>
+            </div>
+          );
+        })}
+      </div>
+      <div className=""d-flex flex-wrap"">
+        {products
+          .filter((prod) =>
+            Object.keys(toCheck).length === 0 ? true : !!toCheck[prod.category]
+          )
+          .map((prod) => {
+            return (
+              <div
+                className=""card m-3""
+                style={{ width: '400px' }}
+                key={prod.id}
+              >
+                <div className=""card-body"">
+                  <p className=""card-text"">Id: {prod.id}</p>
+                  <h3 className=""card-title"">Title: {prod.title}</h3>
+                  <p className=""card-text"">Price: {prod.price}</p>
+                  <p className=""card-text"">Category: {prod.category}</p>
+                  <p className=""card-text"">Rating: {prod.rating.rate}</p>
+                </div>
+              </div>
+            );
+          })}
+      </div>
+    </div>
+  );
+}",2022-11-27 17:41:21Z,1
+26,74591177,74584924,Marek Rozmus,6738911,"From the test I see that you are using react testing library. In this case you should ""interact"" with your component inside the test and check if the component reacts properly.
+The test for spinner should be like that:
+render the component
+find the email input field and ""type"" there an email - use one of getBy* methods and then type with e.g. fireEvent.change(input, {target: {value: 'test@example.com'}})
+find the password input field and ""type"" there a password - same as above
+find the submit button and ""click"" it - use one of getBy* methods to find it and then use fireEvent to click it
+this (I assume) should trigger your onSubmit which will call the handleLogin callback which will update the state and that will render the spinner.
+check if spinner is in the document.
+Most probably you would need some mocking for your userAccountAPI so it calls a mock function and not some real API. In here you can also mock that API to return whatever response you want and check if component displays correct content.",2022-11-27 15:15:27Z,0
+27,,74584923,,,,,
+28,,74584919,,,,,
+29,74585477,74584917,Enfield li,16648127,"Custom hook names should always start with lower case use (see beta docs), so change to useMessage.",2022-11-26 20:46:12Z,0
+30,74585569,74584917,Rohit Khandelwal,15220748,"There are two things which can resolve your problem, here:
+First, name your hook with lowercase use and not uppercase. The reason for that is it is wrong according to the React docs.
+Here, your UseMessage is not a custom hook for React, just a javascript function. Inside it, you are using useState which is a hook and React won't allow that. The reason is the next point.
+Second, according to the rules of React you can utilise any hook only inside the body of a function component or inside the body of another hook function.",2022-11-26 21:02:53Z,0
+31,74597413,74584914,dshukertjr,5458913,"One typical case for unsubscribing would be when a user goes to another page, and you are no longer displaying the incoming realtime data to the user. In such case, you might want to unsubscribe.
+In general, you subscribe from the realtime notifications whenever you no longer need the realtime data. In some cases, you might want to keep the realtime listeners connected at all times, because it's a data that is used in every single page of your application. In this case, you don't have to think about unsubscribing from the listener.",2022-11-28 07:41:32Z,0
+32,closed,74584907,closed,closed,closed,closed,closed
+33,74585834,74584971,Alex Wauters,3544591,"You're missing a second argument, of type *[]*string for the versionStages. See on https://pkg.go.dev/github.com/aws/aws-cdk-go/awscdk/v2/awsrds#section-readme
+// Grants reading the secret value to some role.
+    GrantRead(grantee awsiam.IGrantable, versionStages *[]*string) awsiam.Grant",2022-11-26 21:49:26Z,0
+34,page note found,74584970,page note found,page note found,page note found,page note found,page note found
+35,,74584969,,,,,
+36,74585193,74584967,Erik A,7296893,"Nz is an application-level function (technically, a method of the Access.Application object exposed as a function. It is unavailable for use in DAO.
+CurrentDb.Execute is using DAO.
+There are two rewrite possibilities:
+Rewrite to avoid Nz:
+IIF((SELECT 1 FROM tInfo WHERE tInfo.applicationID = tApplicant.applicationID) IS NOT NULL, 1, 0)
+Or my preferred rewrite:
+ORDER BY EXISTS(SELECT 1 FROM tInfo WHERE tInfo.applicationID = tApplicant.applicationID) DESC
+Rewrite to DoCmd.RunSQL which does allow these functions (and suppress warnings as desired:
+DoCmd.RunSQL sSQL",2022-11-26 19:55:58Z,2
+37,74588843,74584967,Gustav,3527297,"First, Access might think that the subquery may return more than one record, thus Top 1 should be used.
+Next, it makes no sense to order the records to be inserted, as records per definition carries no order unless you specify this in the target table or the query where that table is used as source.
+Also, even if you insisted to sort the insert, Access can't do this, as it doesn't know the output for AM.
+Thus, this will run:
+sSQL = ""SELECT tApplicant.applicationID, tApplicant.name, tApplicant.ID, tPreferences.fld3, "" & _
+       ""NZ((SELECT Top 1 1 FROM tInfo WHERE tInfo.applicationID = tApplicant.applicationID), 0) AS AM "" _
+       ""INTO "" & sTable & "" FROM tPreferences INNER JOIN tApplicant "" & _
+       ""ON tPreferences.IDapplic = tApplicant.applicationID "" & _
+       ""WHERE tPreferences.IDposit = "" & rsRos!ID & "";""
+CurrentDB.Execute sSQL, dbFailOnError
+That said, Erik's suggestion to replace Nz with Exists is preferable as this will result in ""clean SQL"" which always will run faster:
+sSQL = ""SELECT tApplicant.applicationID, tApplicant.name, tApplicant.ID, tPreferences.fld3, "" & _
+       ""EXISTS (SELECT Top 1 1 FROM tInfo WHERE tInfo.applicationID = tApplicant.applicationID) AS AM "" _
+       ""INTO "" & sTable & "" FROM tPreferences INNER JOIN tApplicant "" & _
+       ""ON tPreferences.IDapplic = tApplicant.applicationID "" & _
+       ""WHERE tPreferences.IDposit = "" & rsRos!ID & "";""
+CurrentDB.Execute sSQL, dbFailOnError
+Neither will this be sortable on AM. Also, it will in Access SQL return -1 and 0 for AM. To obtain 1, apply ABS:
+sSQL = ""SELECT tApplicant.applicationID, tApplicant.name, tApplicant.ID, tPreferences.fld3, "" & _
+       ""ABS(EXISTS (SELECT Top 1 1 FROM tInfo WHERE tInfo.applicationID = tApplicant.applicationID)) AS AM "" _
+       ""INTO "" & sTable & "" FROM tPreferences INNER JOIN tApplicant "" & _
+       ""ON tPreferences.IDapplic = tApplicant.applicationID "" & _
+       ""WHERE tPreferences.IDposit = "" & rsRos!ID & "";""
+CurrentDB.Execute sSQL, dbFailOnError",2022-11-27 09:22:30Z,2
+38,74589711,74584967,dimitris,4037170,"@ErikA and @Gustav 's answers pointed me to the right direction. Thank you both for your time.
+The problem in this case was that I tried to use a subquery in the ORDER BY clause. Which I found out now that is not allowed. eg. see here
+More over, I found this question, which makes mine a possible duplicate. Here it is suggested to wrap the query.
+So I firstly SELECT the data in no order with the subquery and then, INSERT INTO the new table using ORDER BY with the new column of the subquery.
+So I'm posting what finally worked for me.
+sSQL = ""SELECT * INTO "" & sTable & "" FROM ("" & _
+       ""SELECT tApplicant.applicationID, tApplicant.name, tApplicant.ID, tProtimisi.fld3, "" & _
+       ""NZ((SELECT 1 FROM tInfo WHERE tInfo.applicationID = tApplicant.applicationID), 0) AS AM "" & _
+       ""FROM tPreferences INNER JOIN tApplicant "" & _
+       ""ON tPreferences.IDapplic = tApplicant.applicationID "" & _
+       ""WHERE tPreferences.IDposit = "" & rsRos!ID & "") "" & _
+       ""ORDER BY AM DESC;""
+CurrentDb.Execute sSQL, dbFailOnError",2022-11-27 11:42:30Z,1
+39,74585049,74584965,KIKO Software,3986005,"I can see what you want to accomplish, but you're going about it the wrong way. You need to join the match_world twice with the teams_world table, once for the home team and once of the away team.
+SELECT 
+  match_world.id_match, 
+  match_world.date_debut, 
+  team_home.nom AS home_nom, 
+  team_away.nom AS away_nom
+FROM 
+  match_world 
+INNER JOIN 
+  teams_world AS team_home 
+  ON match_world.id_domicile = team_home.id_equipe 
+INNER JOIN 
+  teams_world AS team_away 
+  ON match_world.id_exterieur = team_away.id_equipe
+You were quite close. Note also that I like to write my queries in a way that they are easy to read, on several line, with indentations, and no abbreviations. This does not impact performance.
+(query is untested, no guarantee of functionality given...)",2022-11-26 20:23:58Z,0
+40,page note found,74584964,page note found,page note found,page note found,page note found,page note found
+41,,74584960,,,,,
+42,74585022,74584959,MaDa,838434,"Either (1) create a Spy instead of the AirportService and mock the getFileName() method:
+service = Mockito.spy(new AirportService());
+and then mock the desired method:
+Mockito.doReturn((/* your value */)).when(service).getFileName();
+or (2) create yet another class, this time extending the AirportService; there you can implement the getFileName so it returns your mock file name.",2022-11-26 19:37:23Z,0
+43,page note found,74584957,page note found,page note found,page note found,page note found,page note found
+44,closed,74584955,closed,closed,closed,closed,closed
+45,,74584954,,,,,
+46,74585428,74584953,Clegane,15415267,"Have you tried using explode before using crosstab ?
+#import ast
+#df['ColName2007.1099']=df['ColName2007.1099'].apply(ast.literal_eval)
+
+df = df.explode('ColName2007.1099')
+df = pd.crosstab(df['ColName2007.1099'],columns=df['Category'],margins=True)
+print(df)
+'''
+Category          Class A  Class B  Class D  All
+ColName2007.1099                                
+org1                    2        3        1    6
+org2                    3        2        2    7
+org3                    2        1        0    3
+org4                    1        0        1    2
+All                     8        6        4   18
+'''
+Note, the data you gave as an example does not match your expected output (For example, there is no Class C in the data you provided. ). But it works correctly in the data you provided. If this is not what you want, please provide data that can be copied and pasted and compatible with the expected output.",2022-11-26 21:00:35Z,0
+47,74585282,74584952,dcsuka,19512611,"Using cumsum with the lag condition produces your expected output:
+df |>
+  mutate(grp = cumsum(abs(bp - lag(bp, default = first(bp))) > 1e7)) |>
+  group_by(chr, grp)  |>
+  summarise(bp = mean(bp),
+            across(starts_with(""instance""), sum),
+            .groups = ""drop"")
+
+# A tibble: 4 × 6
+    chr   grp         bp instances_1 instances_2 instances_sum
+  <int> <int>      <dbl>       <int>       <int>         <int>
+1     1     0 144001090.           1           1             2
+2     1     1 187773270            2           2             4
+3     2     2 121819306.           3           1             4
+4     2     3 259965687            1           1             2",2022-11-26 20:08:56Z,2
+48,74585153,74584950,GoldenGateBridge,14404231,"The p value is stored in the p.value parameter of the T test. And to update rejects, you just do rejects = rejects + 1.
+set.seed(5)
+simulation <- function(n, mu, sigma, mu0, alpha) {
+ rejects <- 0; S <- 100
+ for(i in 1:S) {
+ sample <- rnorm(n, mean=mu, sd=sigma)
+ T=t.test(sample,mu=mu0)
+ if (T$p.value < alpha) rejects = rejects+1
+ }
+ return(rejects)
+ }",2022-11-26 19:49:48Z,1
+49,48846044,48845989,heemayl,3789550,"As you have not defined a __repr__ (or __str__) on the class, it's inherited the one from the superclass -- object and that how its written there. So, all your class instances are expressed that way. As for the class itself, you need to change the __repr__/__str__ on the metaclass i.e. the class of which our class in question is an instance of; the default metaclass is type. __main__ is the name of the module, here as you are directly executing it, its being considered as a script and all scripts have the name __main__ in Python
+There's a . in between because Fraction is an attribute of the script __main__, the module; and belongs to the module level scope
+Example:
+In [47]: class MyMeta(type):
+    ...:     def __repr__(cls):
+    ...:         return 'Whatever...'
+    ...:     
+
+In [48]: class MyClass(metaclass=MyMeta):
+    ...:     def __repr__(self):
+    ...:         return 'Howdy...'
+    ...:     
+
+In [49]: obj = MyClass()
+
+In [50]: print(obj)
+Howdy...
+
+In [51]: print(type(obj))
+Whatever...
+For Python2, you need to define __metaclass__ as a class attribute.",2018-02-17 21:42:04Z,12
+50,48845999,48845989,Ignacio Vazquez-Abrams,20862,"The name of the script being run is always __main__. This is why you check for this specific name, and why classes defined in the script are attributes of it.",2018-02-17 21:15:08Z,7
+51,74585040,74584948,Krelq,15000290,"You should add a ""WHERE"" param to your query. Now you are trying to select each exam from the database instead of selecting the ones assigned to the user
+Example
+SELECT id, title, no_questions, points, schedule, time_limit, link FROM exams WHERE user_id = 1
+Change ""user_id"" parameter to one from your database or create it in order to assign exam to student. And you should dynamic replace ""1"" with ID from user session.
+https://www.w3schools.com/mysql/mysql_where.asp",2022-11-26 19:29:32Z,0
+52,,74584946,,,,,
+53,closed,74584945,closed,closed,closed,closed,closed
+54,74584975,74584944,Blitva,4852315,"Edit: Figured it out. The mistake was that I was doing cleanup like so return () => newSocket.close(); and consequently returning a Socket<DefaultEventsMap, DefaultEventsMap> type.
+Solution was to make the newsocket.close() call inside of curly braces so that the return value remains void, like so:
+return () => {
+  newSocket.close();
+};
+Would appreciate any further elaboration if my interpretation is faulty here.",2022-11-26 19:20:58Z,0
+55,,74584942,,,,,
+56,,74584940,,,,,
+57,,74584939,,,,,
+58,page note found,74584938,page note found,page note found,page note found,page note found,page note found
+59,page note found,74584937,page note found,page note found,page note found,page note found,page note found
+60,74585423,74584935,Dead Fox,20609023,"The recursive call inside the last 2 if statements should have:
+R.getLeftChild() and R.getRightChild()
+instead of:
+root.getLeftChild() and root.getRightChild()",2022-11-26 20:33:38Z,0
+61,,74584931,,,,,
+62,74584958,74584930,chqrlie,4593267,"The c array is defined as a local variable in both the display and the data_entry_of_customers functions. The values entered are lost when the function returns and the contents of c in the display function are indeterminate producing undefined behavior (garbage output).
+The program may seem to behave as expected if, by chance, the position and contents of the c array in both functions happens to be the same.
+You should more the definition of the array to the main function and pass it to data_entry_of_customers() and display().
+Here is a modified version:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Customer {
+    char name[20];
+    int date;
+    int month;
+    int year;
+    int amount;
+    int type_of_account;
+} cus;
+
+void display(int n, cus c[n]);
+void data_entry_of_customers(int n, cus c[n]);
+
+int main() {
+    int n, choices;
+
+    printf(""\n Enter the number of customers : "");
+    if (scanf(""%d"", &n) != 1)
+        return 1;
+    cus cus_array[n];
+
+    for (;;) {
+        printf(""\n Enter your choice :"");
+        if (scanf(""%d"", &choices) != 1)
+            break;
+
+        switch (choices) {
+        case 1:
+            data_entry_of_customers(n, cus_array);
+            break;
+
+        case 2:
+            display(n, cus_array);
+            break;
+
+        case 3:
+            return 0;
+
+        default:
+            printf(""\n Invalid Choice\n"");
+            break;
+        }
+    }
+    return 0;
+}
+
+void data_entry_of_customers(int n, cus c[n]) {
+    for (int i = 0; i < n; i++) {
+        printf(""\n Enter the name of the customer%d : "", i + 1);
+        scanf(""%19s"", c[i].name);
+        printf(""\n Enter the date when the account was opened by customer : "");
+        scanf(""%d"", &c[i].date);
+        printf(""\n Enter the month when the account was opened by customer : "");
+        scanf(""%d"", &c[i].month);
+        printf(""\n Enter the year when the account was opened by customer : "");
+        scanf(""%d"", &c[i].year);
+        printf(""\n Enter the amount deposited by the customer : "");
+        scanf(""%d"", &c[i].amount);
+    }
+}
+
+void display(int n, cus c[n]) {
+    for (int i = 0; i < n; i++) {
+        printf(""\n The name of the customer%d is %s"", i + 1, c[i].name);
+        printf(""\n The date-month-year when the account was opened by customer%d is %d-%d-%d"", i + 1, c[i].date, c[i].month, c[i].year);
+        printf(""\n The amount when the account was opened by customer%d is %d"", i + 1, c[i].amount);
+        printf(""\n"");
+    }
+}
+Note these remarks:
+void display(int n, cus c[n]); defines a function that receives an int and a pointer to an array of cus structures. The prototype is equivalent to: void display(int n, cus c[]); and void display(int n, cus *c);... A possible improvement is to specify that the cus structures are not modified by the display function, thus change the prototype to void display(int n, const cus *c);
+the return value of scanf should be tested to detect and handle invalid input. Writing separate functions to read a string and an integer would help make the code more reliable and readable.
+Here is an alternate approach:
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct Customer {
+    char name[20];
+    int date;
+    int month;
+    int year;
+    int amount;
+    int type_of_account;
+} cus;
+
+char *enter_string(const char *prompt, char *dest, size_t size);
+int enter_int(const char *prompt, int min, int max);
+
+void display(int n, const cus *c);
+void data_entry_of_customers(int n, cus *c);
+
+int main() {
+    int n = enter_int(""Enter the number of customers"", 1, 1000);
+    cus cus_array[n];
+
+    for (;;) {
+        switch (enter_int(""Enter your choice"", 1, 3)) {
+        case 1:
+            data_entry_of_customers(n, cus_array);
+            break;
+
+        case 2:
+            display(n, cus_array);
+            break;
+
+        case 3:
+            return 0;
+        }
+    }
+}
+
+char *enter_string(const char *prompt, char *dest, size_t size) {
+    int c;
+    size_t i = 0;
+
+    printf(""%s: "", prompt);
+    fflush(stdout);
+    while ((c = getchar()) != EOF && c != '\n') {
+        if (i + 1 < size) {
+            dest[i++] = (char)c;
+        }
+    }
+    printf(""\n"");
+    if (i == 0 && c == EOF) {
+        printf(""unexpected end of file\n"");
+        exit(1);
+    }
+    if (i < size)
+        dest[i] = '\0';
+    return dest;
+}
+
+int enter_int(const char *prompt, int min, int max) {
+    int c, res, value;
+
+    for (;;) {
+        printf(""%s: "", prompt);
+        fflush(stdout);
+        res = scanf(""%d"", &value);
+        while ((c = getchar()) != EOF && c != '\n')
+            continue;
+        printf(""\n"");
+        if (res == 1) {
+            if (value >= min && value <= max)
+                return value;
+            printf(""invalid value, must be between %d and %d\n"", min, max);
+        } else {
+            if (c == EOF) {
+                printf(""unexpected end of file\n"");
+                exit(1);
+            }
+            printf(""invalid input, enter a number between %d and %d\n"", min, max);
+        }
+    }
+}
+
+void data_entry_of_customers(int n, cus *c) {
+    char prompt[80];
+    for (int i = 0; i < n; i++) {
+        snprintf(prompt, sizeof prompt, ""Enter the name of the customer%d"", i + 1);
+        enter_string(prompt, c[i].name, sizeof(c[i].name));
+        c[i].date = enter_int(""Enter the date when the account was opened by customer"",
+                              1, 31);
+        c[i].month = enter_int(""Enter the month when the account was opened by customer"",
+                               1, 12);
+        c[i].year = enter_int(""Enter the year when the account was opened by customer"",
+                              1900, 2100);
+        c[i].amount = enter_int(""Enter the amount disposited by the customer"",
+                                0, 1000000000);
+    }
+}
+
+void display(int n, const cus *c) {
+    for (int i = 0; i < n; i++) {
+        printf(""The name of the customer%d is %s\n"", i + 1, c[i].name);
+        printf(""The date-month-year when the account was opened by customer%d is %d-%d-%d\n"",
+               i + 1, c[i].date, c[i].month, c[i].year);
+        printf(""The amount when the account was opened by customer%d is %d\n"",
+               i + 1, c[i].amount);
+        printf(""\n"");
+    }
+}",2022-11-27 15:01:01Z,4
+63,,74584928,,,,,
+64,74585112,74584926,Chris Hamilton,12914833,"You can get whether the checkbox is checked through e.target.checked rather than using a state variable. You also don't need to attach a value, you can just pass it directly, not that it matters.
+Since you're filtering on multiple elements, this pattern isn't going to work either. You'll need to save all of your filters so you can remove one but keep the others when the box is unchecked. I like to use a Set for this purpose. You can then just filter the products on that set.
+You also don't need to use state variables for constants that don't change.
+Also, your ids and htmlFors need to be unique, or clicking on a label will always select the first box. It's simpler just to wrap the input with the label so you don't need to worry about it.
+Stackblitz: https://stackblitz.com/edit/react-ts-9a9n67?file=App.tsx
+const categories = [
+  'electronics',
+  'jewelery',
+  ""men's clothing"",
+  ""women's clothing"",
+];
+
+const allProducts = [
+  {
+    id: 1,
+    title: 'Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops',
+    price: 109.95,
+    category: 'electronics',
+    rating: { rate: 3.9, count: 120 },
+  },
+  {
+    id: 2,
+    title: 'Mens Casual Premium Slim Fit T-Shirts ',
+    price: 22.3,
+    category: ""men's clothing"",
+    rating: { rate: 4.1, count: 259 },
+  },
+  {
+    id: 3,
+    title: 'Mens Cotton Jacket',
+    price: 55.99,
+    category: ""men's clothing"",
+    rating: { rate: 4.7, count: 500 },
+  },
+  {
+    id: 4,
+    title: 'Womens Dress',
+    price: 15.99,
+    category: ""women's clothing"",
+    rating: { rate: 2.1, count: 430 },
+  },
+  {
+    id: 5,
+    title:
+      ""John Hardy Women's Legends Naga Gold & Silver Dragon Station Chain Bracelet"",
+    price: 695,
+    category: 'jewelery',
+    rating: { rate: 4.6, count: 400 },
+  },
+];
+
+export default function App() {
+  let [categoryFilters, setcategoryFilters] = useState(new Set());
+
+  function updateFilters(checked, categoryFilter) {
+    if (checked)
+      setcategoryFilters((prev) => new Set(prev).add(categoryFilter));
+    if (!checked)
+      setcategoryFilters((prev) => {
+        const next = new Set(prev);
+        next.delete(categoryFilter);
+        return next;
+      });
+  }
+
+  const filteredProducts =
+    categoryFilters.size === 0
+      ? allProducts
+      : allProducts.filter((p) => categoryFilters.has(p.category));
+
+  return (
+    <div>
+      <div className=""d-flex justify-content-evenly"">
+        {categories.map((elm, index) => {
+          return (
+            <div className=""form-check ms-2"" key={index}>
+              <label className=""form-check-label"">
+                <input
+                  className=""form-check-input""
+                  type=""checkbox""
+                  onChange={(e) => updateFilters(e.target.checked, elm)}
+                />
+                {elm}
+              </label>
+            </div>
+          );
+        })}
+      </div>
+      <div className=""d-flex flex-wrap"">
+        {filteredProducts.map((prod) => {
+          return (
+            <div className=""card m-3"" style={{ width: '400px' }} key={prod.id}>
+              <div className=""card-body"">
+                <p className=""card-text"">Id: {prod.id}</p>
+                <h3 className=""card-title"">Title: {prod.title}</h3>
+                <p className=""card-text"">Price: {prod.price}</p>
+                <p className=""card-text"">Category: {prod.category}</p>
+                <p className=""card-text"">Rating: {prod.rating.rate}</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}",2022-11-26 20:33:42Z,1
+65,74585141,74584926,codinn.dev,15755662,"Simple Solution (with updated data model for category array)
+const [category, setCategory] = useState([{value : ""electronics"", isChecked: false},{value : ""jewelery"", isChecked: false},{value : ""men's clothing"", isChecked: false},{value : ""women's clothing"", isChecked: false}]);
+  const [products, setProducts] = useState([
+    {""id"":1,""title"":""Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops"",""price"":109.95,""category"":""electronics"", ""rating"":{""rate"":3.9,""count"":120}},
+    {""id"":2,""title"":""Mens Casual Premium Slim Fit T-Shirts "",""price"":22.3, ""category"":""men's clothing"",""rating"":{""rate"":4.1,""count"":259}},
+    {""id"":3,""title"":""Mens Cotton Jacket"",""price"":55.99, ""category"":""men's clothing"",""rating"":{""rate"":4.7,""count"":500}},
+    {""id"":4,""title"":""Womens Dress"",""price"":15.99, ""category"":""women's clothing"" ,""rating"":{""rate"":2.1,""count"":430}},
+    {""id"":5,""title"":""John Hardy Women's Legends Naga Gold & Silver Dragon Station Chain Bracelet"",""price"":695, ""category"":""jewelery"",""rating"":{""rate"":4.6,""count"":400}}
+  ])
+
+  let [newProducts, setNewProducts] = useState([]);
+
+  const filterProducts = (e) => {
+    const categories = [...category];
+    const cat = categories.filter((cat)=>cat.value ===  e.target.value);
+    cat[0].isChecked = e.target.checked;
+    setCategory([...categories]);
+
+    const tempProduct = [];
+    for(let c of categories){
+      if(c.isChecked){
+        tempProduct.push(...products.filter((a) => a.category === c.value));
+      }
+    }
+
+    setNewProducts([...tempProduct]);
+  }
+
+  return <div>
+    <div className='d-flex justify-content-evenly'>
+        {
+            category.map((elm, index) => {
+                return <div className=""form-check ms-2"" key={index}>
+                    <input className=""form-check-input"" type=""checkbox"" value={elm.value} id=""flexCheckDefault"" onChange={filterProducts}/>
+                    <label className=""form-check-label"" htmlFor=""flexCheckDefault"">
+                        {elm.value}
+                    </label>
+                </div>
+            })
+        }
+    </div>
+    <div className='d-flex flex-wrap'>
+    {
+       (newProducts.length === 0 ? products : newProducts).map((prod) => {
+        return  <div className='card m-3' style={{ width: ""400px"" }} key={prod.id}>
+        <div className='card-body'>
+            <p className='card-text'>Id: {prod.id}</p>
+            <h3 className='card-title'>Title: {prod.title}</h3>
+            <p className='card-text'>Price: {prod.price}</p>
+            <p className='card-text'>Category: {prod.category}</p>
+            <p className='card-text'>Rating: {prod.rating.rate}</p>
+        </div>
+    </div>
+
+      })
+    }
+    </div>
+   </div>",2022-11-26 19:48:10Z,1
+66,74585222,74584926,John Li,20436957,"Here is a minimal solution works without useEffect or changing category and products.
+A few issues that can be addressed in posted code:
+Each input need to have an unique id which matches htmlFor on label for the pair to work together.
+When filterProducts sets a new state value, it does not get the updated value in the same block. Only use this event to set the filters in toCheck.
+The value type of toCheck can be an object of [category]: Boolean so each category can be filtered separately, and filters can be combined as well.
+The original products can be filtered before mapped, so there is no need to keep another state of newProducts, or to modify products data.
+Example (live demo: stackblitz)
+import React, { useState } from 'react';
+import './style.css';
+
+export default function App() {
+  const [category, setCategory] = useState([
+    'electronics',
+    'jewelery',
+    ""men's clothing"",
+    ""women's clothing"",
+  ]);
+  const [products, setProducts] = useState([
+    {
+      id: 1,
+      title: 'Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops',
+      price: 109.95,
+      category: 'electronics',
+      rating: { rate: 3.9, count: 120 },
+    },
+    {
+      id: 2,
+      title: 'Mens Casual Premium Slim Fit T-Shirts ',
+      price: 22.3,
+      category: ""men's clothing"",
+      rating: { rate: 4.1, count: 259 },
+    },
+    {
+      id: 3,
+      title: 'Mens Cotton Jacket',
+      price: 55.99,
+      category: ""men's clothing"",
+      rating: { rate: 4.7, count: 500 },
+    },
+    {
+      id: 4,
+      title: 'Womens Dress',
+      price: 15.99,
+      category: ""women's clothing"",
+      rating: { rate: 2.1, count: 430 },
+    },
+    {
+      id: 5,
+      title:
+        ""John Hardy Women's Legends Naga Gold & Silver Dragon Station Chain Bracelet"",
+      price: 695,
+      category: 'jewelery',
+      rating: { rate: 4.6, count: 400 },
+    },
+  ]);
+
+  const [toCheck, setToCheck] = useState({});
+
+  const filterProducts = (value) =>
+    setToCheck((prev) => {
+      return { ...prev, [value]: !!!prev[value] };
+    });
+
+  return (
+    <div>
+      <div className=""d-flex justify-content-evenly"">
+        {category.map((elm, index) => {
+          return (
+            <div className=""form-check ms-2"" key={index}>
+              <input
+                className=""form-check-input""
+                type=""checkbox""
+                value={elm}
+                id={`flexCheckDefault-${index}`}
+                onChange={(e) => filterProducts(e.target.value)}
+              />
+              <label
+                className=""form-check-label""
+                htmlFor={`flexCheckDefault-${index}`}
+              >
+                {elm}
+              </label>
+            </div>
+          );
+        })}
+      </div>
+      <div className=""d-flex flex-wrap"">
+        {products
+          .filter((prod) =>
+            Object.keys(toCheck).length === 0 ? true : !!toCheck[prod.category]
+          )
+          .map((prod) => {
+            return (
+              <div
+                className=""card m-3""
+                style={{ width: '400px' }}
+                key={prod.id}
+              >
+                <div className=""card-body"">
+                  <p className=""card-text"">Id: {prod.id}</p>
+                  <h3 className=""card-title"">Title: {prod.title}</h3>
+                  <p className=""card-text"">Price: {prod.price}</p>
+                  <p className=""card-text"">Category: {prod.category}</p>
+                  <p className=""card-text"">Rating: {prod.rating.rate}</p>
+                </div>
+              </div>
+            );
+          })}
+      </div>
+    </div>
+  );
+}",2022-11-27 17:41:21Z,1
+67,74591177,74584924,Marek Rozmus,6738911,"From the test I see that you are using react testing library. In this case you should ""interact"" with your component inside the test and check if the component reacts properly.
+The test for spinner should be like that:
+render the component
+find the email input field and ""type"" there an email - use one of getBy* methods and then type with e.g. fireEvent.change(input, {target: {value: 'test@example.com'}})
+find the password input field and ""type"" there a password - same as above
+find the submit button and ""click"" it - use one of getBy* methods to find it and then use fireEvent to click it
+this (I assume) should trigger your onSubmit which will call the handleLogin callback which will update the state and that will render the spinner.
+check if spinner is in the document.
+Most probably you would need some mocking for your userAccountAPI so it calls a mock function and not some real API. In here you can also mock that API to return whatever response you want and check if component displays correct content.",2022-11-27 15:15:27Z,0
+68,74591177,74584924,Marek Rozmus,6738911,"From the test I see that you are using react testing library. In this case you should ""interact"" with your component inside the test and check if the component reacts properly.
+The test for spinner should be like that:
+render the component
+find the email input field and ""type"" there an email - use one of getBy* methods and then type with e.g. fireEvent.change(input, {target: {value: 'test@example.com'}})
+find the password input field and ""type"" there a password - same as above
+find the submit button and ""click"" it - use one of getBy* methods to find it and then use fireEvent to click it
+this (I assume) should trigger your onSubmit which will call the handleLogin callback which will update the state and that will render the spinner.
+check if spinner is in the document.
+Most probably you would need some mocking for your userAccountAPI so it calls a mock function and not some real API. In here you can also mock that API to return whatever response you want and check if component displays correct content.",2022-11-27 15:15:27Z,0
+69,,74584923,,,,,
+70,,74584919,,,,,
+71,74585477,74584917,Enfield li,16648127,"Custom hook names should always start with lower case use (see beta docs), so change to useMessage.",2022-11-26 20:46:12Z,0
+72,74585569,74584917,Rohit Khandelwal,15220748,"There are two things which can resolve your problem, here:
+First, name your hook with lowercase use and not uppercase. The reason for that is it is wrong according to the React docs.
+Here, your UseMessage is not a custom hook for React, just a javascript function. Inside it, you are using useState which is a hook and React won't allow that. The reason is the next point.
+Second, according to the rules of React you can utilise any hook only inside the body of a function component or inside the body of another hook function.",2022-11-26 21:02:53Z,0
+73,74597413,74584914,dshukertjr,5458913,"One typical case for unsubscribing would be when a user goes to another page, and you are no longer displaying the incoming realtime data to the user. In such case, you might want to unsubscribe.
+In general, you subscribe from the realtime notifications whenever you no longer need the realtime data. In some cases, you might want to keep the realtime listeners connected at all times, because it's a data that is used in every single page of your application. In this case, you don't have to think about unsubscribing from the listener.",2022-11-28 07:41:32Z,0
+74,closed,74584907,closed,closed,closed,closed,closed
+75,,74584902,,,,,
+76,page note found,74584901,page note found,page note found,page note found,page note found,page note found
+77,closed,74584900,closed,closed,closed,closed,closed
+78,page note found,74584899,page note found,page note found,page note found,page note found,page note found
+79,page note found,74584897,page note found,page note found,page note found,page note found,page note found
+80,,74584896,,,,,
+81,,74584895,,,,,
+82,74594134,74584892,chiliNUT,2079345,"I'll take a stab at this. Assuming I'm interpreting the spec's rules correctly (which I may not be) the section on how to handle error handling when parsing css would seem to allow for this.
+a.) In The DOM standard for querySelector
+The querySelector(selectors) method steps are to return the first result of running scope-match a selectors string selectors against this, if the result is not an empty list; otherwise null.
+https://dom.spec.whatwg.org/#dom-parentnode-queryselector
+b. ) That links to section 1.3. Selectors. Looking at section 1.3.1:
+To scope-match a selectors string selectors against a node, run these steps:
+Let s be the result of parse a selector selectors. [SELECTORS4]
+c.) Parse a selector links off to the csswg v4 draft, which doesn't go into as much detail about error handling as the v3 draft. The v3 draft states (emphasis added by me):
+§ 2.2. Error Handling
+This section is not normative.
+When errors occur in CSS, the parser attempts to recover gracefully, throwing away only the minimum amount of content before returning to parsing as normal. This is because errors aren’t always mistakes—new syntax looks like an error to an old parser, and it’s useful to be able to add new syntax to the language without worrying about stylesheets that include it being completely broken in older UAs.
+The precise error-recovery behavior is detailed in the parser itself, but it’s simple enough that a short description is fairly accurate.
+At the ""top level"" of a stylesheet, an starts an at-rule. Anything else starts a qualified rule, and is included in the rule’s prelude. This may produce an invalid selector, but that’s not the concern of the CSS parser—at worst, it means the selector will match nothing.
+Once an at-rule starts, nothing is invalid from the parser’s standpoint; it’s all part of the at-rule’s prelude. Encountering a ends the at-rule immediately, while encountering an opening curly-brace <{-token> starts the at-rule’s body. The at-rule seeks forward, matching blocks (content surrounded by (), {}, or []) until it finds a closing curly-brace <}-token> that isn’t matched by anything else or inside of another block. The contents of the at-rule are then interpreted according to the at-rule’s own grammar.
+Qualified rules work similarly, except that semicolons don’t end them; instead, they are just taken in as part of the rule’s prelude. When the first {} block is found, the contents are always interpreted as a list of declarations.
+When interpreting a list of declarations, unknown syntax at any point causes the parser to throw away whatever declaration it’s currently building, and seek forward until it finds a semicolon (or the end of the block). It then starts fresh, trying to parse a declaration again.
+If the stylesheet ends while any rule, declaration, function, string, etc. are still open, everything is automatically closed. This doesn’t make them invalid, though they may be incomplete and thus thrown away when they are verified against their grammar.
+After each construct (declaration, style rule, at-rule) is parsed, the user agent checks it against its expected grammar. If it does not match the grammar, it’s invalid, and gets ignored by the UA, which treats it as if it wasn’t there at all.
+https://drafts.csswg.org/css-syntax-3/#error-handling
+Bullets 3-5 allow for a css rule to end without proper closing delimiters. In a stylesheet, a rule is a ""prelude"" (selector) followed by a set of css declarations wrapped in braces. A selector with no rules after it is invalid and discarded.
+<style>
+div[foo]
+</style>
+and is treated the same as a selector without a proper closing delimiter
+<style>
+div[foo
+</style>
+A selector with rules after it missing a closing ; and/or } is a complete selector + rule, and so it is still valid. Both of these are valid:
+<style>
+.foo {
+    color:red;
+</style>
+or
+<style>
+.bar {
+    color:blue
+</style>
+Finally, given that document.querySelector only requires a selector with no rule following it, I would conclude that a selector with a missing closing delimiter is valid according to the spec. You can see the same behavior with the :is pseudo class selector:
+document.querySelector(""div:is(.foo"");
+document.querySelector(""div:is([foo"");",2022-11-27 22:17:30Z,4
+83,74584963,74584891,Satsangpriyadas Swami,9677279,"The only way i think is to put
+debugger;
+everywhere you wanted the breakpoint. As you have rightly understood that the browser considers it as a new file, and there is no way to tell the browser that it is same file when the URL is different.",2022-11-26 19:19:10Z,0
+84,closed,74584890,closed,closed,closed,closed,closed
+85,74586970,74584889,ΩΠΟΚΕΚΡΥΜΜΕΝΟΣ,20557510,"Here's an algorithm that needs only the desired sub-sequence length as input. It uses groupby_rolling to create your sub-sequences.
+period = 3
+min_df = min_df.explode('time_idx')
+(
+    min_df.get_column('group_idx').unique().to_frame()
+    .join(
+        min_df.get_column('time_idx').unique().to_frame(),
+        how='cross'
+    )
+    .join(
+        min_df.with_column(pl.col('time_idx').alias('time_idx_nulls')),
+        on=['group_idx', 'time_idx'],
+        how='left',
+    )
+    .groupby_rolling(
+        index_column='time_idx',
+        by='group_idx',
+        period=str(period) + 'i',
+    )
+    .agg(pl.col(""time_idx_nulls""))
+    .filter(pl.col('time_idx_nulls').arr.lengths() == period)
+    .sort('group_idx')
+)
+shape: (8, 3)
+┌───────────┬──────────┬─────────────────┐
+│ group_idx ┆ time_idx ┆ time_idx_nulls  │
+│ ---       ┆ ---      ┆ ---             │
+│ i64       ┆ i64      ┆ list[i64]       │
+╞═══════════╪══════════╪═════════════════╡
+│ 0         ┆ 2        ┆ [0, 1, 2]       │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 0         ┆ 3        ┆ [1, 2, 3]       │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 1         ┆ 2        ┆ [null, null, 2] │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 1         ┆ 3        ┆ [null, 2, 3]    │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 2         ┆ 2        ┆ [0, null, 2]    │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 2         ┆ 3        ┆ [null, 2, 3]    │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 3         ┆ 2        ┆ [0, null, null] │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 3         ┆ 3        ┆ [null, null, 3] │
+└───────────┴──────────┴─────────────────┘
+And for example, with period = 2:
+shape: (12, 3)
+┌───────────┬──────────┬────────────────┐
+│ group_idx ┆ time_idx ┆ time_idx_nulls │
+│ ---       ┆ ---      ┆ ---            │
+│ i64       ┆ i64      ┆ list[i64]      │
+╞═══════════╪══════════╪════════════════╡
+│ 0         ┆ 1        ┆ [0, 1]         │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 0         ┆ 2        ┆ [1, 2]         │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 0         ┆ 3        ┆ [2, 3]         │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 1         ┆ 1        ┆ [null, null]   │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 1         ┆ 2        ┆ [null, 2]      │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 1         ┆ 3        ┆ [2, 3]         │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 2         ┆ 1        ┆ [0, null]      │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 2         ┆ 2        ┆ [null, 2]      │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 2         ┆ 3        ┆ [2, 3]         │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 3         ┆ 1        ┆ [0, null]      │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 3         ┆ 2        ┆ [null, null]   │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 3         ┆ 3        ┆ [null, 3]      │
+└───────────┴──────────┴────────────────┘
+Edit: managing RAM requirements
+One way that we can manage RAM requirements (for this, or any other algorithm on large datasets) is to find ways to divide-and-conquer.
+If we look at our particular problem, each line in the input dataset leads to results that are independent of any other line. We can use this fact to apply our algorithm in batches.
+But first, let's create some data that leads to a large problem:
+min_time = 0
+max_time = 1_000
+nbr_groups = 400_000
+min_df = (
+    pl.DataFrame({""time_idx"": [list(range(min_time, max_time, 2))]})
+    .join(
+        pl.arange(0, nbr_groups, eager=True).alias(""group_idx"").to_frame(),
+        how=""cross""
+    )
+)
+min_df.explode('time_idx')
+shape: (200000000, 2)
+┌──────────┬───────────┐
+│ time_idx ┆ group_idx │
+│ ---      ┆ ---       │
+│ i64      ┆ i64       │
+╞══════════╪═══════════╡
+│ 0        ┆ 0         │
+├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┤
+│ 2        ┆ 0         │
+├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┤
+│ 4        ┆ 0         │
+├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┤
+│ 6        ┆ 0         │
+├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┤
+│ ...      ┆ ...       │
+├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┤
+│ 992      ┆ 399999    │
+├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┤
+│ 994      ┆ 399999    │
+├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┤
+│ 996      ┆ 399999    │
+├╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌┤
+│ 998      ┆ 399999    │
+└──────────┴───────────┘
+The input dataset when exploded is 200 million records .. so roughly the size you describe. (Of course, using divide-and-conquer, we won't explode the full dataset.)
+To divide-and-conquer this, we'll slice our input dataset into smaller datasets, run the algorithm on the smaller datasets, and then concat the results into one large dataset. (One nice feature of slice is that it's very cheap - it's simply a window into the original dataset, so it consumes very little additional RAM.)
+Notice the slice_size variable. You'll need to experiment with this value on your particular computing platform. You want to set this as large as your RAM requirements allow. If set too low, your program will take too long. If set too high, your program will crash. (I've arbitrarily set this to 10,000 as a starting value.)
+time_index_df = (
+    pl.arange(min_time, max_time, eager=True, dtype=pl.Int64)
+    .alias(""time_idx"")
+    .to_frame()
+    .lazy()
+)
+
+
+period = 3
+slice_size = 10_000
+result = pl.concat(
+    [
+        (
+            time_index_df
+            .join(
+                min_df
+                .lazy()
+                .slice(next_index, slice_size)
+                .select(""group_idx""),
+                how=""cross"",
+            )
+            .join(
+                min_df
+                .lazy()
+                .slice(next_index, slice_size)
+                .explode('time_idx')
+                .with_column(pl.col(""time_idx"").alias(""time_idx_nulls"")),
+                on=[""group_idx"", ""time_idx""],
+                how=""left"",
+            )
+            .groupby_rolling(
+                index_column='time_idx',
+                by='group_idx',
+                period=str(period) + 'i',
+            )
+            .agg(pl.col(""time_idx_nulls""))
+            .filter(pl.col('time_idx_nulls').arr.lengths() == period)
+            .select(['group_idx', 'time_idx_nulls'])
+            .collect()
+        )
+        for next_index in range(0, min_df.height, slice_size)
+    ]
+)
+
+result.sort('group_idx')
+shape: (399200000, 2)
+┌───────────┬───────────────────┐
+│ group_idx ┆ time_idx_nulls    │
+│ ---       ┆ ---               │
+│ i64       ┆ list[i64]         │
+╞═══════════╪═══════════════════╡
+│ 0         ┆ [0, null, 2]      │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 0         ┆ [null, 2, null]   │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 0         ┆ [2, null, 4]      │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 0         ┆ [null, 4, null]   │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ ...       ┆ ...               │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 399999    ┆ [994, null, 996]  │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 399999    ┆ [null, 996, null] │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 399999    ┆ [996, null, 998]  │
+├╌╌╌╌╌╌╌╌╌╌╌┼╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌╌┤
+│ 399999    ┆ [null, 998, null] │
+└───────────┴───────────────────┘
+Some other things
+You do actually need to use the joins. The joins are used to fill in the ""holes"" in your sequences with null values.
+Also, notice that I've put each slice/batch into lazy mode, but not the entire algorithm. Depending on your computing platform, using lazy mode for the entire algorithm may again overwhelm your system, as Polars attempts to spread the work across multiple processors which could lead to more out-of-memory situations for you.
+Also note the humongous size of my output dataset: almost 400 million records. I did this purposely as a reminder that your output dataset may be the ultimate problem. That is, any algorithm would fail if the result dataset is larger than your RAM can hold.",2022-11-27 21:00:06Z,1
+86,74586627,74584889,jqurious,19355181,"I suspect there should be a cleaner way to do this but you could create range/mask list columns:
+>>> max_time_step = 3
+>>> sequence_length = 3
+>>> (
+...    min_df
+...    .with_columns([
+...       pl.arange(0, max_time_step + 1).list().alias(""range""),
+...       pl.col(""time_idx"").arr.eval(
+...          pl.arange(0, max_time_step + 1).is_in(pl.element()),
+...          parallel=True
+...       ).alias(""mask"")
+...    ])
+... )
+shape: (4, 4)
+┌───────────┬───────────────┬───────────────┬──────────────────────────┐
+│ group_idx | time_idx      | range         | mask                     │
+│ ---       | ---           | ---           | ---                      │
+│ i64       | list[i64]     | list[i64]     | list[bool]               │
+╞═══════════╪═══════════════╪═══════════════╪══════════════════════════╡
+│ 0         | [0, 1, ... 3] | [0, 1, ... 3] | [true, true, ... true]   │
+├───────────┼───────────────┼───────────────┼──────────────────────────┤
+│ 1         | [2, 3]        | [0, 1, ... 3] | [false, false, ... true] │
+├───────────┼───────────────┼───────────────┼──────────────────────────┤
+│ 2         | [0, 2, 3]     | [0, 1, ... 3] | [true, false, ... true]  │
+├───────────┼───────────────┼───────────────┼──────────────────────────┤
+│ 3         | [0, 3]        | [0, 1, ... 3] | [true, false, ... true]  │
+└─//────────┴─//────────────┴─//────────────┴─//───────────────────────┘
+You can then .explode() those columns, replace true with the number and group them back together.
+Update #1: Use @ΩΠΟΚΕΚΡΥΜΜΕΝΟΣ's .groupby_rolling() technique to generate correct sub-sequences.
+Update #2: Use regular .groupby() and .list().slice() to generate sub-sequences.
+>>> min_df = pl.DataFrame({
+...    ""group_idx"": [0, 1, 2, 3], 
+...    ""time_idx"": [[0, 1, 2, 3], [2, 3], [0, 2, 3], [0,3]]
+... })
+... max_time_step = 3
+... sequence_length = 2
+... (
+...    min_df
+...    .with_columns([
+...       pl.arange(0, max_time_step + 1).list().alias(""range""),
+...       pl.col(""time_idx"").arr.eval(
+...          pl.arange(0, max_time_step + 1).is_in(pl.element()),
+...          parallel=True
+...       ).alias(""mask"")
+...    ])
+...    .explode([""range"", ""mask""])
+...    .with_column(
+...       pl.when(pl.col(""mask""))
+...         .then(pl.col(""range""))
+...         .alias(""value""))
+...    .groupby(""group_idx"", maintain_order=True)
+...    .agg([
+...        pl.col(""value"")
+...          .list()
+...          .slice(length=sequence_length, offset=n)
+...          .suffix(f""{n}"")
+...        for n in range(0, max_time_step - (1 if max_time_step % sequence_length == 0 else 0))
+...    ])
+...    .melt(""group_idx"", value_name=""subsequence"")
+...    .drop(""variable"")
+...    .sort(""group_idx"")
+... )
+shape: (12, 2)
+┌───────────┬──────────────┐
+│ group_idx | subsequence  │
+│ ---       | ---          │
+│ i64       | list[i64]    │
+╞═══════════╪══════════════╡
+│ 0         | [0, 1]       │
+├───────────┼──────────────┤
+│ 0         | [1, 2]       │
+├───────────┼──────────────┤
+│ 0         | [2, 3]       │
+├───────────┼──────────────┤
+│ 1         | [null, null] │
+├───────────┼──────────────┤
+│ 1         | [null, 2]    │
+├───────────┼──────────────┤
+│ ...       | ...          │
+├───────────┼──────────────┤
+│ 2         | [null, 2]    │
+├───────────┼──────────────┤
+│ 2         | [2, 3]       │
+├───────────┼──────────────┤
+│ 3         | [0, null]    │
+├───────────┼──────────────┤
+│ 3         | [null, null] │
+├───────────┼──────────────┤
+│ 3         | [null, 3]    │
+└─//────────┴─//───────────┘
+It feels like you should be able to use pl.element() inside .then() here to avoid the explode/groupby but it fails:
+>>> (
+...    min_df
+...    .with_column(
+...       pl.col(""time_idx"").arr.eval(
+...          pl.when(pl.arange(0, max_time_step + 1).is_in(pl.element()))
+...            .then(pl.element()),
+...          parallel=True)
+...       .alias(""subsequence"")
+...    )
+... )
+---------------------------------------------------------------------------
+ShapeError                                Traceback (most recent call last)",2022-11-28 00:18:13Z,0
+87,74595020,74584889,jqurious,19355181,"Here's another approach using duckdb
+It seems to perform much better in both runtime and memory in my local benchmark.
+You can .explode(""subsequence"") afterwards to get a row per subsequence - this seems to be quite memory intensive though.
+You can unnest([ ... ] subsequence) to do the explode in duckdb - it seems to be a bit slower currently.
+Update: Using the explode_table() from https://issues.apache.org/jira/plugins/servlet/mobile#issue/ARROW-12099 seems to add very little overhead.
+>>> import duckdb
+... 
+... min_df = pl.DataFrame({
+...    ""group_idx"": [0, 1, 2, 3], 
+...    ""time_idx"": [[0, 1, 2, 3], [2, 3], [0, 2, 3], [0,3]]
+... })
+... max_time_step = 3
+... sequence_length = 2
+... upper_bound = (
+...    max_time_step - (
+...       1 if max_time_step % sequence_length == 0 else 0
+...    )
+... )
+... tbl = min_df.to_arrow()
+... pl.from_arrow(
+...    duckdb.connect().execute(f""""""
+...       select 
+...       group_idx, [ 
+...          time_idx_nulls[n: n + {sequence_length - 1}] 
+...             for n in range(1, {upper_bound + 1})
+...       ] subsequence
+...       from (
+...          from tbl select group_idx, list_transform(
+...             range(0, {max_time_step + 1}),
+...             n -> case when list_has(time_idx, n) then n end
+...          ) time_idx_nulls
+...       )
+...    """""")
+...    .arrow()
+... )
+shape: (4, 2)
+┌───────────┬─────────────────────────────────────┐
+│ group_idx | subsequence                         │
+│ ---       | ---                                 │
+│ i64       | list[list[i64]]                     │
+╞═══════════╪═════════════════════════════════════╡
+│ 0         | [[0, 1], [1, 2], [2, 3]]            │
+├───────────┼─────────────────────────────────────┤
+│ 1         | [[null, null], [null, 2], [2, 3]... │
+├───────────┼─────────────────────────────────────┤
+│ 2         | [[0, null], [null, 2], [2, 3]]      │
+├───────────┼─────────────────────────────────────┤
+│ 3         | [[0, null], [null, null], [null,... │
+└─//────────┴─//──────────────────────────────────┘",2022-11-28 02:28:14Z,0
+88,page note found,74584888,page note found,page note found,page note found,page note found,page note found
+89,74584985,74584886,I'mahdi,1740577,"If you persist to use numpy.vectorize you need to define signature when defining vectorize on function.
+import numpy as np
+
+def f(x):
+    return x[0] + x[1]
+    # Or
+    # return np.add.reduce(x, axis=0)
+
+
+X1 = np.array([0, 1, 2])
+X2 = np.array([0, 1, 2])
+X = np.meshgrid(X1, X2)
+
+# np.asarray(X).shape -> (2, 3, 3)
+# shape of the desired result is (3, 3)
+
+f_vec = np.vectorize(f, signature='(n,m,m)->(m,m)')
+result = f_vec(X)
+print(result)
+Output:
+[[0 1 2]
+ [1 2 3]
+ [2 3 4]]",2022-11-26 19:30:52Z,1
+90,74585037,74584886,ddejohn,6298712,"For the function you mentioned in the comments:
+f = lambda x: x[0] + x[1] if x[0] > 0 else 0
+You can use np.where:
+def f(x):
+    return np.where(x > 0, x[0] + x[1], 0)
+    # np.where(some_condition, value_if_true, value_if_false)
+Numpy was designed with vectorization in mind -- unless you have some crazy edge-case there's almost always a way to take advantage of Numpy's broadcasting and vectorization. I strongly recommend seeking out vectorized solutions before giving up so easily and resorting to using for loops.",2022-11-26 19:29:23Z,0
+91,74585399,74584886,hpaulj,901925,"If you are too lazy, or ignorant, to do are ""proper"" 'vectorization', you can use np.vectorize. But you need to take time to really read its docs. It isn't magic. It can be useful, especially if you need to take advantage of broadcasting, and the function, some reason or other, only accepts scalars.
+Rewriting your function to work with scalar inputs (though it also works fine with arrays, in this case):
+In [91]: def foo(x,y): return x+y
+    ...: f = np.vectorize(foo)
+With scalar inputs:
+In [92]: f(1,2)
+Out[92]: array(3)
+With 2 arrays (a (2,1) and (3,)), returning a (2,3):
+In [93]: f(np.array([1,2])[:,None], np.arange(1,4))
+Out[93]: 
+array([[2, 3, 4],
+       [3, 4, 5]])
+Samething with meshgrid:
+In [94]: I,J = np.meshgrid(np.array([1,2]), np.arange(1,4),indexing='ij')
+
+In [95]: I
+Out[95]: 
+array([[1, 1, 1],
+       [2, 2, 2]])
+
+In [96]: J
+Out[96]: 
+array([[1, 2, 3],
+       [1, 2, 3]])
+
+In [97]: f(I,J)
+Out[97]: 
+array([[2, 3, 4],
+       [3, 4, 5]])
+Or meshgrid arrays as defined in [93]:
+In [98]: I,J = np.meshgrid(np.array([1,2]), np.arange(1,4),indexing='ij', sparse=True)
+
+In [99]: I,J
+Out[99]: 
+(array([[1],
+        [2]]),
+ array([[1, 2, 3]]))
+But in a true vectorized sense, you can just add the 2 arrays:
+In [100]: I+J
+Out[100]: 
+array([[2, 3, 4],
+       [3, 4, 5]])
+The first paragraph of np.vectorize docs (my emphasis):
+Define a vectorized function which takes a nested sequence of objects or numpy arrays as inputs and returns a single numpy array or a tuple of numpy arrays. The vectorized function evaluates pyfunc over successive tuples of the input arrays like the python map function, except it uses the broadcasting rules of numpy.
+edit
+Starting with a function that expects a 2 element tuple, we could add a cover that splits it into two, and apply vectorize to that:
+In [103]: def foo1(x): return x[0]+x[1]
+     ...: def foo2(x,y): return foo1((x,y))
+     ...: f = np.vectorize(foo2)
+
+In [104]: f(1,2)
+Out[104]: array(3)
+X is a 2d element tuple:
+In [105]: X = np.meshgrid(np.array([1,2]), np.arange(1,4),indexing='ij')
+
+In [106]: X
+Out[106]: 
+[array([[1, 1, 1],
+        [2, 2, 2]]),
+ array([[1, 2, 3],
+        [1, 2, 3]])]
+which can be passed to f as:
+In [107]: f(X[0],X[1])
+Out[107]: 
+array([[2, 3, 4],
+       [3, 4, 5]])
+But there's no need to slow things down with that iteration. Just pass the tuple to foo1:
+In [108]: foo1(X)
+Out[108]: 
+array([[2, 3, 4],
+       [3, 4, 5]])
+In f = lambda x: x[0] + x[1] if x[0] > 0 else 0 you get the 'ambiguity' valueerror because if only works with scalars. But there are plenty of faster numpy ways of replacing such an if step.",2022-11-26 22:16:21Z,0
+92,,74584884,,,,,
+93,closed,74584879,closed,closed,closed,closed,closed
+94,,74584878,,,,,
+95,74586176,74584877,IGP,4339402,"You almost got it. The [$point] parameter should be the second parameter of DB::raw($query, $bindings) but you added it as a second parameter to select().
+// What you have
+->select(DB::raw(...), [$point])
+// correct syntax
+->select(DB::raw(..., [$point]))
+If you've got nothing else to put in your select clause, might as well use selectRaw(). It's the same as select(DB::raw()).
+DB::table('users')
+    ->selectRaw('ST_DistanceSpheroid(geometry(location), ST_GeomFromText(\'POINT(?)\'), \'SPHEROID[""WGS 84"",6378137,298.257223563]\')', [$point])
+Personally, I'd write the query like this:
+$query = DB::table('users')
+    ->selectRaw(
+        ""ST_DistanceSpheroid(
+            geometry(location),
+            ST_GeomFromText('POINT(? ?)'),
+            'SPHEROID[?, ?, ?]'
+        )"",
+        [37.854289, 55.685333, 'WGS 84', 6378137, 298.257223563]
+    )
+    ->get();",2022-11-26 23:26:56Z,2
+96,74585075,74584876,TarJae,13321647,"One way could be: First create a column with your units extracting only alphabetic letters, then use distinct():
+library(dplyr)
+
+df %>% 
+  mutate(unit1 = gsub(""[^a-zA-Z]"", """", unit)) %>% 
+  distinct(unit1)
+  unit1
+1    kg
+2     g
+df <- structure(list(commodity = c(""eggs"", ""lentils (green)"", ""oil (vegetable)"", 
+""rice"", ""sugar (white)"", ""eggs"", ""lentils (green)"", ""oil (vegetable)"", 
+""rice"", ""sugar (white)"", ""eggs""), unit = c(""1.8 kg"", ""900 g"", 
+""810 g"", ""kg"", ""kg"", ""1.8 kg"", ""900 g"", ""810 g"", ""kg"", ""kg"", 
+""1.8 kg"")), class = ""data.frame"", row.names = c(NA, -11L))",2022-11-26 19:34:30Z,1
+97,74586345,74584876,akrun,3732271,"In base R, we could use
+length(unique(trimws(df$unit, whitespace = ""[0-9.]+\\s+""))) == 1
+[1] FALSE",2022-11-26 23:19:56Z,0
+98,closed,74584874,closed,closed,closed,closed,closed
+99,page note found,74584873,page note found,page note found,page note found,page note found,page note found
+100,,74584872,,,,,
+101,74586622,74584871,Martín,20363318,"If you do a Find an Replace with ""at"" substituting it with """", it will automatically change to a date format. And then you can set your custom format as you wish.
+Second row there is just A2+1 to show you now it became a value you can format!",2022-11-27 00:27:14Z,0
+102,closed,74584863,closed,closed,closed,closed,closed
+103,,74584862,,,,,
+104,47457251,47457105,Brice,48136,"This is just a version mismatch. You have compiled your code using java version 9 and your current JRE is version 8. Try upgrading your JRE to 9.
+49 = Java 5
+50 = Java 6
+51 = Java 7
+52 = Java 8
+53 = Java 9
+54 = Java 10
+55 = Java 11
+56 = Java 12
+57 = Java 13
+58 = Java 14
+59 = Java 15
+60 = Java 16
+61 = Java 17
+62 = Java 18
+63 = Java 19",2022-03-28 11:22:57Z,375
+105,49609255,47457105,Eric D,2021355,"IDE: Eclipse Oxygen.3
+To temporarily correct the problem do the following:
+Project menu > Properties > Java Compiler > Compiler compliance level > 1.8
+A permanent fix likely involves installing JDK 9.
+FYI 1.8 is what Java 8 is called.
+Side bar
+I recently returned to Java after a foray into C# (a breath of fresh air) and installed Eclipse Oxygen onto a clean system that had never had Java installed on it before. This default everything with a brand new install of Eclipse Oxygen yet somehow or other Eclipse can't get its own parameters to match the jdk that's installed. This is the second project I created and the second time I ran into this headache. Time to go back to C#?
+Related Question
+has been compiled by a more recent version of the Java Runtime (class file version 53.0)",2018-04-02 10:07:20Z,65
+106,71580720,47457105,georgiecasey,467509,"You might see this error in IntelliJ as well and this comes up in Google.
+I think it's a Gradle error more than an IDE error.
+The fix (stolen from here) is configure Java 11 as a Gradle JVM in IntelliJ:
+File -> Settings -> Build, Execution & Development -> Build Tools -> Gradle and change Gradle JVM to 11
+That screenshot stolen from the Jetbrains issue as well",2022-03-23 01:11:29Z,44
+107,58201633,47457105,Dharman,1839439,"You can try this way
+javac --release 8 yourClass.java",2019-10-02 12:42:17Z,21
+108,47457162,47457105,Eugene,1059372,"53 stands for java-9, so it means that whatever class you have has been compiled with javac-9 and you try to run it with jre-8. Either re-compile that class with javac-8 or use the jre-9",2017-11-23 13:53:53Z,8
+109,63352817,47457105,INDRAJITH EKANAYAKE,8134164,"For temporary solution just right click on Project => Properties => Java compiler => over there please select compiler compliance level 1.8 => .class compatibility 1.8 => source compatibility 1.8.
+Then your code will start to execute on version 1.8.",2021-01-26 08:36:53Z,8
+110,64833548,47457105,ILally,14354515,"I had a similar issue from the console after building a Jar in Intellij. Using the Java configuration to update to a newer version (Windows -> Configure Java -> Update -> Update Now) didn't work and stuck at version 1.8 (Java 8).
+To switch to a more recent version locally I had to install the Java 15 JDK from https://www.oracle.com/uk/java/technologies/javase-jdk15-downloads.html and add that to my Java runtime environment settings.",2020-11-14 11:47:21Z,6
+111,73851763,47457105,Karthik Kompelli,3861913,"For Android Studio, File -> Project Structure [Ctrl + Alt + Shift + S]",2022-09-26 08:57:39Z,4
+112,62477981,47457105,Jacob Waters,9053474,"I'm writing this because I found the other answers hard to understand.
+Essentially your JRE is not updated and/or Eclipse is not configured to use the most recent JRE.
+On Windows, go to Control Panel -> Programs -> Java -> update and proceed to update java
+or if you don't have Java, go to Oracle's website and download the most recent JRE.
+Once this is done, go into eclipse, and under the project view, right click on your project, select Java Build Path, double click on JRE System Library, then Select Workspace Default JRE 14.1.
+If a recent version of Java doesn't show up here, it probably isn't installed. Check you JRE(NOT JDK) version and make sure it's recent. If it is, try restarting the computer then trying this again.",2020-06-19 20:17:06Z,3
+113,65898065,47457105,INDRAJITH EKANAYAKE,8134164,"Your JDK version: Java 8
+Your JRE version: Java 9
+Here your JRE version is different than the JDK version that's the case. Here you can compile all the java classes using JDK version 1.8. If you want to compile only one java class just change the *.java into <yourclassname>.java
+javac -source 1.8 -target 1.8  *.java
+source: The version that your source code requires to compile.
+target: The oldest JRE version you want to support.",2021-01-26 08:33:20Z,3
+114,73900075,47457105,Jaime Montoya,4242086,"The solution for me was doing what Andrei Kuznetsov said at https://youtrack.jetbrains.com/issue/IDEA-251407/Failed-to-run-Android-project-in-the-Idea-20203-EAP-OutputBuildAction-has-been-compiled-by-a-more-recent-version-of-the-Java, summarized in the following image:
+""Root cause: IDEA sources are now compiled against Java 11. Known workaround is to configure Java 11 as a Gradle JVM."" (Andrei Kuznetsov)",2022-09-29 18:22:35Z,3
+115,67595309,47457105,Agustin Rodriguez,12961065,"You should check your Project Facets.
+Project Properties > Project Facets
+Change java version to the same version you are using. That work for me!",2021-05-18 23:56:35Z,2
+116,69315388,47457105,Teja Sai,16993871,"IDE : Eclipse 2021-09
+This is caused because you have compiled the code with java version 9 and have java8 installed. You don't have to update to solve this issue.
+Right click on project > properties > Java Compiler > untick-Enable project specific settings > configure workspace settings > tick-Use default compliance settings > Apply and Close.
+Now your code should be executed properly.",2021-09-24 12:54:22Z,2
+117,72559136,47457105,invzbl3,8370915,"I've reproduced on Windows 10 the similar issue in format like:
+Error: LinkageError occurred while loading main class ...
+java.lang.UnsupportedClassVersionError: com/.../ServiceApplication 
+has been compiled by a more recent version of the Java Runtime (class file version 62.0), 
+this version of the Java Runtime only recognizes class file versions up to 61.0
+after upgrading the project from Java 17 to Java 18.
+I had project settings regarding to Java 18:
+Command line:
+java version ""18.0.1.1"" 2022-04-22
+Java(TM) SE Runtime Environment (build 18.0.1.1+2-6)
+Java HotSpot(TM) 64-Bit Server VM (build 18.0.1.1+2-6, mixed mode, sharing)
+Project Structure -> Project Settings -> Project:
+Project Structure -> Project Settings -> Modules:
+Project Structure -> Platform Settings -> SDKs:
+And the reason of this issue was:
+I forgot to specify the correct version for Run/Debug Configurations -> Build and run to Java 18 instead of Java 17:
+As it was compiled with a newer Java version, but running on the older one.
+If it's Maven-related issue, you can modify POM by specifying the -source and -target of the Java Compiler.
+Additional helpful links:
+Setting the Java Version in Maven
+Consuming Jar Artifact of a Specific Java Version",2022-06-09 17:58:53Z,2
+118,54347178,47457105,ARVIND1994,9729389,"Go to Project section, click on properties > then to Java compiler > check compiler compliance level is 1.8 , or there should be no yellow warning at bottom",2019-01-25 04:47:25Z,1
+119,57809887,47457105,Carlos Casallas,4455583,Refreshing gradle dependencies works for me: Right click over the project -> Gradle -> Refresh Gradle Project.,2019-09-05 16:48:01Z,1
+120,71797008,47457105,odnes,11470799,"I faced this error in Intellij. Apparently, choosing java 1.8 as the project SDK doesn't affect the javac compiler that's used to build the project.
+To change that, go to Settings -> Build, Execution, Deployment -> Compiler -> Java Compiler, and change Project bytecode version to 8.",2022-04-08 12:28:20Z,1
+121,74269958,47457105,Chandana,8683973,"If you're using IntelliJ IDEA and having this error, try this.
+Command + , (Open Preferences)
+Build, Execution, Deployment > Build Tools > Gradle
+Gradle JVM > Change it to a proper version",2022-10-31 23:10:35Z,1
+122,70268997,47457105,Rajitha Bhanuka,2679033,"This is getting as an example if your computer running on an older version of java and the Neo4J is compiled on the latest version, please try to install the same version or upper to your computer.",2021-12-08 01:50:44Z,0
+123,72455961,47457105,Jeremy Thompson,495455,"I'm getting the same problem with Sonarqube
+has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 52.0
+Sonarqube with AzureDevOps error output:
+INFO: SonarScanner 4.6.2.2472
+INFO: Java 1.8.0_231 Oracle Corporation (32-bit)
+INFO: Windows Server 2016 10.0 x86
+INFO: User cache: C:\Windows\system32\config\systemprofile.sonar\cache
+INFO: Scanner configuration file: C:\agent_a_work_tasks\SonarQubePrepare_15b84ca1-b62f-4a2a-a403-89b77a063157\5.4.0\classic-sonar-scanner-msbuild\sonar-scanner-4.6.2.2472\bin..\conf\sonar-scanner.properties
+INFO: Project root configuration file: C:\agent_a_work\189.sonarqube\out\sonar-project.properties
+INFO: Analyzing on SonarQube server 9.4.0
+INFO: Default locale: ""en_AU"", source code encoding: ""windows-1252"" (analysis is platform dependent)
+INFO: ------------------------------------------------------------------------
+INFO: EXECUTION FAILURE
+INFO: ------------------------------------------------------------------------
+INFO: Total time: 0.405s
+INFO: Final Memory: 3M/15M
+##[error]ERROR: Error during SonarScanner execution
+java.lang.UnsupportedClassVersionError: org/sonar/batch/bootstrapper/EnvironmentInformation has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 52.0
+I had Java v11 installed on the Sonarcube server, but the error is saying its the Build Agent that doesn't have Java v11.
+I decided to add the Java v12 bin path to the Environment Variable Path for it to be detected. IMPORTANT THIS NEEDS TO BE DONE ON THE BUILD AGENT:
+For a Hosted Build Agent you can install JDK v11 or use this PowerShell script step:
+- task: PowerShell@2
+  displayName: 'Download and Install Java v11'
+  inputs:
+    targetType: 'inline'
+    script: |
+      [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+      $Command = ""c:\jdk-11.0.15_windows-x64_bin.exe""
+      $Parms = ""/s""
+      Write-Host [System.IO.File]::Exists($Command)
+      if ([System.IO.File]::Exists($Command)) {
+        Write-Host 'Downloading Java11.exe'      
+        Invoke-WebRequest https://yourOwnUrl.com/jdk-11.0.15_windows-x64_bin.exe -OutFile $Command
+      }
+      Write-Host [System.IO.File]::Exists($Command)
+      & ""$Command"" $Prms
+      [System.Environment]::SetEnvironmentVariable(""JAVA_HOME"", ""C:\Program Files\Java\jdk-11.0.15"")
+      [System.Environment]::SetEnvironmentVariable(""Path"", [System.Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::Machine) + "";$($env:JAVA_HOME)\bin"")",2022-06-01 03:50:06Z,0
+124,72621076,47457105,Ross Youngblood,3885930,"In my case, I'm building with VS2019 some C++ code that is using ANTLR4. ANTLR4 is java based, and to use it I run java commands as a custom build step.
+Earlier that day I had updated my JRE (Java Runtime Environment) on my new laptop to 1.8. Not thinking, since it's been a year since I ran ANTLR4 stuff... I need the full JDK to COMPILE with java. So I had a 1.8 RUNTIME, but the VS2019 build shell was finding the JDK1.7 compiler. Once I installed the 1.8 JDK, all was good.
+So 80% of the time JRE is fine for me... it's just when I need the full JDK, DOH I need the full JDK.",2022-06-14 17:23:06Z,0
+125,72629970,47457105,Tousif Akram,10254686,"In build.gradle(app) update as below: (Worked for me)
+ kotlinOptions {
+        jvmTarget = '1.8'
+    }",2022-06-15 10:42:32Z,0
+126,72764274,47457105,Kristina,19421441,For me this problem was resolved by just installing older version of testng. Looks like It compiles with my Java 8,2022-06-26 18:42:48Z,0
+127,72910491,47457105,SKO,11442980,"If you're using IntelliJ IDEA and having this error, try this.
+1. Command + , (Open Preferences)
+2. Build, Execution, Deployment > Build Tools > Gradle
+3. Gradle JVM > Change it to a proper version",2022-07-08 11:06:16Z,0
+128,73307678,47457105,Jaikish Pai,5639251,"Check the version of Java configured in IDE by navigating to Settings -> Build, Execution, Deployment > Build Tools > Gradle",2022-08-10 14:01:30Z,0
+129,73418257,47457105,Ninja,1323374,"In my case, I use the IntellJ Idea and set JDK11 as my SDK and JDK17 in gradle setting.
+Just update my SDK as JDK17, it was solved
+Check the JDK in ""Project Setting""(CMD+;) -> SDK
+with
+the gradle JVM in ""Preference""(CMD+,) -> Build Tools -> gradle JVM",2022-08-19 14:23:17Z,0
+130,73525416,47457105,Jatin,14930106,"Faced the same issue when initialise my project from spring initizer We need to match the version of java.sourceCompatibility and jvmTarget used for run and compile in ""build.gradle.kt"" file.",2022-08-29 07:27:01Z,0
+131,74177706,47457105,Happy Lee,16488841,"Last week, I updated my Mac's Android Studio from 2021.2.1 to 2021.3.1. Then our project was built failed for the similar reason:
+Cause: com/android/tools/idea/gradle/run/OutputBuildAction has been compiled by a more recent version of the Java Runtime (class file version 55.0), this version of the Java Runtime only recognizes class file versions up to 53.0
+I found several discussion on the Jetbrains YouTrack Forum: Failed to run Android project in the Idea 2020.3 EAP (OutputBuildAction has been compiled by a more recent version of the Java Runtime (class file version 55.0)). The suggested workaround is to update the defined Gradle JDK version to JDK11, but many Android projects don't support Gradle JDK11, so does mine.
+Another solution is to downgrade Android Studio from 2021.3.1 to 2021.2.1, and it worked for me. Hope it helps.",2022-10-24 07:20:24Z,0
+132,74420876,47457105,The beginner guy,15316123,"it looks like everyone is using windows for development, but if you use Linux, lower your Java version. maybe install JDK 8, the version table provided by @Nithin should give you an idea of which version you want to install.",2022-11-13 12:21:43Z,0
+133,74581322,47457105,Pranab Kumar Nath,20605815,"After configuring the version of the compiler to 1.8 (your required version), try the older version of spring boot currently it is 3.0.0 by default but you can try 2.7.6 instead.
+enter image description here",2022-11-26 10:25:35Z,0
+134,,74584860,,,,,
+135,74584908,74584859,matt,341994,"Basically this is the same as the question I answer here.
+Foundation is not part of Swift, it's part of Cocoa, the older Objective-C library that preceded Swift by many, many years. Foundation's version of a string is NSString. But Swift String is ""bridged"" to NSString, so as soon as you import Foundation, a bunch of NSString methods spring to life as if they were part of Swift String even though they are not. In your case, you actually end up calling a completely different method which, as you've discovered, gives different results.
+A good way to see this is to command-click on the term contains in your code (or even better, option-click it and then click Open in Developer Documentation):
+If you have not imported Foundation (or UIKit), you jump to Swift String's contains.
+If you have imported Foundation, you jump to Foundation's contains.
+As for this part:
+shouldn't the language indicate this somehow
+I'm afraid Stack Overflow is not very good on ""should"" questions. I would say, yes, this is a little maddening, but it's part of the price we pay for the easy and seamless integration of Swift into the world of Cocoa programming. You could argue that the Swift people should not have named their method contains, but that train has left the station, and besides, it's a name that perfectly indicates what the method does.
+Another thing to keep in mind is that you would probably never really use Swift except in the presence of Foundation (perhaps because you're in the presence of UIKit or SwiftUI or AppKit) so in practical terms the issue wouldn't arise. You've hit an unusual edge-case, which is commendable but, ex hypothesi, unusual.
+To make things even more complicated, I think the Swift library method you encountered may have been just introduced as part of Xcode 14 and Swift 5.7 etc. See https://developer.apple.com/videos/play/wwdc2022/110354/?time=1415 for the WWDC '22 discussion of new String features. In earlier versions of Xcode, the phrase ""a"".contains("""") would not even have compiled in the absence of Foundation — and so the problem would never have arisen!",2022-11-26 19:43:39Z,7
+136,,74584858,,,,,
+137,,74584857,,,,,
+138,74584911,74584856,Chris,15261315,"From the OCaml Platform page:
+Disable code lens
+Code lens are type information displayed over a symbol. In the screenshot below, code lens is grey text t -> Sandbox.t.
+You can disable code lens for all extensions, i.e., in whole VS Code, set this settings in your settings.json:
+""editor.codeLens"": false
+Or if you only want to disable it for OCaml:
+""[ocaml]"": {  ""editor.codeLens"": false }",2022-11-26 19:10:51Z,1
+139,74585241,74584855,prudenko,3271168,"Based on the documentation of the vandermonde matrix you can construct it in the following way:
+np.vander(B, increasing=True) == np.column_stack([B**(i) for i in range(len(B))])
+So your optimization would be to do dot product in-place:
+np.column_stack([np.dot(A, B**(i)) for i in range(len(B))])",2022-11-26 20:03:02Z,0
+140,,74584854,,,,,
